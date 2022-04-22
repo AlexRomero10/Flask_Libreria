@@ -1,3 +1,4 @@
+from distutils.log import debug
 from flask import Flask, render_template, abort
 import os
 import json
@@ -19,5 +20,5 @@ def categoria(categoria):
         if "categories" in category.keys() and categoria in category["categories"]:
             return render_template("categoria.html", libros=datos, categoria=categoria)
     abort(404)
-port=os.environ["PORT"]
-app.run('0.0.0.0',int(port), debug=False)
+
+app.run('0.0.0.0',debug=False)
