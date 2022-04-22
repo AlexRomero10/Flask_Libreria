@@ -1,40 +1,28 @@
-# En el siguiente programa realizado en python vamos a trabajar sobre un fichero .json y con flask para generar paginas dinamicas.
-
 from flask import Flask, render_template, abort
-import json
 import os
+import json
 
+app = Flask (__name__)
 
-app=Flask(__name__)
+with open("books.json") as fichero:
+    datos=json.load(fichero)
 
-#Creamos la variables global libros, que usaremos en nuestras paginas dinamicas para mostrar la informacion de los libros.
-
-with open("books.json") as libros:
-    datos=json.load(libros)
-
-#Creamos nuestra primera ruta que nos dirigira a la pagina principal en la que podremos ver todos los enlaces de los libros para ver su informacion.
-
-@app.route('/')
+@app.route('/',methods=["GET","POST"])
 def inicio():
-    nombre='Alejandro Romero Tortosa'
-    return render_template('inicio.html', libros=datos, nombre=nombre)
+    return render_template("inicio.html",libros=datos)
 
-#Creamos nuestra segunda ruta en nuestro programa que nos ayudara a obtener la informacion de los libros
-
-@app.route('/libro/<isbn>')
+@app.route('/libro/<isbn>',methods=["GET","POST"])
 def libro(isbn):
-    for l in datos:
+    for book in datos:
+        if "isbn" in book.keys() and isbn == book["isbn"]:
+            return render_template("libro.html", libro=book)
+    abort(404)
 
-        #Aqui debemos hacer una comprobacion doble ya que hay algunos libros que no tienen isbn, por lo que eso se debe comprobar y ademas
-            
-        if "isbn" in l.keys() and isbn == l["isbn"]:
-            return render_template('libros.html', libro=l) 
-
-    return abort(404)
-
-@app.route('/categoria/<categoria>')
+@app.route('/categoria/<categoria>',)
 def categoria(categoria):
-            return render_template('categoria.html', libros=datos, categoria=categoria)
+    for category in datos:
+        if "categories" in category.keys() and categoria in category["categories"]:
+            return render_template("categoria.html", libros=datos, categoria=categoria)
+    abort(404)
 
-
-app.run('0.0.0.0',debug=False)
+app.run('0.0.0.0' ,debug=False)
